@@ -10,7 +10,7 @@ namespace NuxibaApp
     {
         static void Main(string[] args)
         {
-            string connectionString = "tu_cadena_de_conexion_mysql";
+            string connectionString = "nuxiba"; // Cadena de Conexión de MySQL
             MySqlConnection connection = new MySqlConnection(connectionString);
 
             try
