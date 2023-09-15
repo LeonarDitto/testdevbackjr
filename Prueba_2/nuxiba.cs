@@ -7,6 +7,7 @@ namespace NuxibaApp
         static void Main(string[] args)
         {
             string connectionString = "Data Source=127.0.0.1@3306;Initial Catalog=nuxiba";
+            SqlConnection connection = new SqlConnection(connectionString);
 
             try
             {
