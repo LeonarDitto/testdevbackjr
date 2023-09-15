@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace NuxibaApp
 {
@@ -10,8 +6,7 @@ namespace NuxibaApp
     {
         static void Main(string[] args)
         {
-            string connectionString = "nuxiba"; // Cadena de Conexión de MySQL
-            MySqlConnection connection = new MySqlConnection(connectionString);
+            string connectionString = "Data Source=127.0.0.1@3306;Initial Catalog=nuxiba";
 
             try
             {
@@ -41,12 +36,12 @@ namespace NuxibaApp
             }
         }
 
-        static void ListarTop10Usuarios(MySqlConnection connection)
+        static void ListarTop10Usuarios(SqlConnection connection)
         {
             string query = "SELECT userId, nombre, paterno, materno FROM usuario LIMIT 10";
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            SqlCommand cmd = new SqlCommand(query, connection);
 
-            using (MySqlDataReader reader = cmd.ExecuteReader())
+            using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 Console.WriteLine("Top 10 Usuarios:");
                 while (reader.Read())
@@ -61,16 +56,16 @@ namespace NuxibaApp
             }
         }
 
-        static void GenerarArchivoCSV(MySqlConnection connection)
+        static void GenerarArchivoCSV(SqlConnection connection)
         {
             string query = "SELECT u.userId, CONCAT(u.nombre, ' ', u.paterno, ' ', u.materno) AS NombreCompleto, " +
                            "e.sueldo, e.fechaIngreso " +
                            "FROM usuario u " +
                            "INNER JOIN empleado e ON u.userId = e.userId";
 
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            SqlCommand cmd = new SqlCommand(query, connection);
 
-            using (MySqlDataReader reader = cmd.ExecuteReader())
+            using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 using (StreamWriter writer = new StreamWriter("usuarios.csv"))
                 {
@@ -91,10 +86,10 @@ namespace NuxibaApp
             Console.WriteLine("Archivo CSV generado: usuarios.csv");
         }
 
-        static void ActualizarSalarioUsuario(MySqlConnection connection, string userId, double nuevoSueldo)
+        static void ActualizarSalarioUsuario(SqlConnection connection, string userId, double nuevoSueldo)
         {
             string query = "UPDATE empleado SET sueldo = @nuevoSueldo WHERE userId = @userId";
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            SqlCommand cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@nuevoSueldo", nuevoSueldo);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.ExecuteNonQuery();
@@ -102,10 +97,10 @@ namespace NuxibaApp
             Console.WriteLine($"Salario de usuario {userId} actualizado a {nuevoSueldo}");
         }
 
-        static void AgregarNuevoUsuario(MySqlConnection connection, string userId, string nombre, string apellido, double sueldo)
+        static void AgregarNuevoUsuario(SqlConnection connection, string userId, string nombre, string apellido, double sueldo)
         {
             string query = "INSERT INTO usuario (userId, nombre, paterno, materno) VALUES (@userId, @nombre, @paterno, @materno)";
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            SqlCommand cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@nombre", nombre);
             cmd.Parameters.AddWithValue("@paterno", apellido);
@@ -113,7 +108,7 @@ namespace NuxibaApp
             cmd.ExecuteNonQuery();
 
             query = "INSERT INTO empleado (userId, sueldo, fechaIngreso) VALUES (@userId, @sueldo, @fechaIngreso)";
-            cmd = new MySqlCommand(query, connection);
+            cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@sueldo", sueldo);
             cmd.Parameters.AddWithValue("@fechaIngreso", DateTime.Now);
